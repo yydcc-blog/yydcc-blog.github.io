@@ -1,0 +1,1221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://yydcc-blog.github.io/</id>
+    <title>ForeverCC&apos;s blog</title>
+    <updated>2023-12-13T11:11:36.802Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://yydcc-blog.github.io/"/>
+    <link rel="self" href="https://yydcc-blog.github.io/atom.xml"/>
+    <subtitle>还是原来的那个CC吗...</subtitle>
+    <logo>https://yydcc-blog.github.io/images/avatar.png</logo>
+    <icon>https://yydcc-blog.github.io/favicon.ico</icon>
+    <rights>All rights reserved 2023, ForeverCC&apos;s blog</rights>
+    <entry>
+        <title type="html"><![CDATA[字符串算法总结]]></title>
+        <id>https://yydcc-blog.github.io/post/zi-fu-chuan-suan-fa-zong-jie/</id>
+        <link href="https://yydcc-blog.github.io/post/zi-fu-chuan-suan-fa-zong-jie/">
+        </link>
+        <updated>2023-12-06T10:21:40.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="字符串">字符串</h1>
+<h2 id="part-0前言">Part 0:前言</h2>
+<blockquote>
+<p>**NK</p>
+</blockquote>
+<h2 id="part-1字符串的存储和基本操作">Part 1：字符串的存储和基本操作</h2>
+<p><code>char</code>、<code>string</code> 都行。</p>
+<p>主要使用 <code>char</code>，但 <code>string</code> 拥有强大的 <code>STL</code>，这里举几个例子。</p>
+<ul>
+<li><code>s.length() / s.size()</code>：长度/大小</li>
+<li><code>s.find(char c[],int begin=0)</code>：从位置 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>b</mi><mi>e</mi><mi>g</mi><mi>i</mi><mi>n</mi></mrow><annotation encoding="application/x-tex">begin</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">b</span><span class="mord mathdefault">e</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span></span></span></span>（不写默认为 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>0</mn></mrow><annotation encoding="application/x-tex">0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>） 开始查找字符（串） <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>c</mi></mrow><annotation encoding="application/x-tex">c</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">c</span></span></span></span> 并返回第一个出现的位置。没找到时返回 <code>s.npos</code>。</li>
+<li><code>s.erase(pos,n)</code>：删除从pos开始的n个字符。</li>
+<li><code>s.erase(pos)</code>：删除pos处的一个字符。（pos是string类型的迭代器，也就是 <code>pos=s.begin()+位置</code>）</li>
+</ul>
+<h2 id="part-2kmp算法">Part 2：KMP算法</h2>
+<p><a href="https://www.luogu.com.cn/problem/P3375">luogu P3375 【模板】KMP</a></p>
+<blockquote>
+<p>求模式串在主串中的出现情况。</p>
+</blockquote>
+<p>如果直接暴力匹配字符串肯定是不行的。</p>
+<p>但是如果对于每次失配之后，不从头重新开始枚举，而是根据已经得知的数据，从某个特定的位置开始匹配，就可以啦。</p>
+<p>所以我们定义 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>k</mi><mi>m</mi><msub><mi>p</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">kmp_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03148em;">k</span><span class="mord mathdefault">m</span><span class="mord"><span class="mord mathdefault">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 为匹配到模式串的第 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>i</mi></mrow><annotation encoding="application/x-tex">i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathdefault">i</span></span></span></span> 位，失配时跳到哪一位。（其中 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>k</mi><mi>m</mi><msub><mi>p</mi><mn>0</mn></msub><mo>=</mo><mi>k</mi><mi>m</mi><msub><mi>p</mi><mn>1</mn></msub><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">kmp_0=kmp_1=1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03148em;">k</span><span class="mord mathdefault">m</span><span class="mord"><span class="mord mathdefault">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03148em;">k</span><span class="mord mathdefault">m</span><span class="mord"><span class="mord mathdefault">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span>，因为此时只能跳到第一位了awa）</p>
+<p>所以匹配就很简单了：</p>
+<pre><code class="language-cpp">t=0;
+for(int i=1;a[i];i++){
+	while(t&amp;&amp;b[t+1]!=a[i])t=kmp[t];//若失配则跳到上一个位置
+	if(b[t+1]==a[i])t++;//匹配成功
+	if(t==strlen(b+1)){//匹配完成
+		printf(&quot;%d\n&quot;,i-strlen(b+1)+1);
+		t=kmp[t];
+	}
+}
+</code></pre>
+<p>但是我们要怎么求这个 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>k</mi><mi>m</mi><mi>p</mi></mrow><annotation encoding="application/x-tex">kmp</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03148em;">k</span><span class="mord mathdefault">m</span><span class="mord mathdefault">p</span></span></span></span> 呢？</p>
+<p>可以考虑自己匹配自己。（也就是先和自己跑一遍匹配）</p>
+<pre><code class="language-cpp">t=0;
+for(int i=2;b[i];i++){
+	while(t&amp;&amp;b[i]!=b[t+1])t=kmp[t];
+	if(b[t+1]==b[i])t++;
+	kmp[i]=t;
+}
+</code></pre>
+<p>然后...就没了qAq。</p>
+<h2 id="part-3字典树">Part 3：字典树</h2>
+<p><a href="https://www.luogu.com.cn/problem/P8306">luogu P8306 【模板】字典树</a></p>
+<blockquote>
+<p>快，省空间。</p>
+</blockquote>
+<p>字典树就是将大量字符串转化为树形结构。</p>
+<p>定义 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>t</mi><mrow><mi>i</mi><mo separator="true">,</mo><mi>j</mi></mrow></msub></mrow><annotation encoding="application/x-tex">t_{i,j}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9011879999999999em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathdefault">t</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.311664em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span><span class="mpunct mtight">,</span><span class="mord mathdefault mtight" style="margin-right:0.05724em;">j</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span> 表示当前节点 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>i</mi></mrow><annotation encoding="application/x-tex">i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathdefault">i</span></span></span></span> 的字符为 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>j</mi></mrow><annotation encoding="application/x-tex">j</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.85396em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.05724em;">j</span></span></span></span>。</p>
+<ul>
+<li>
+<p>根节点不包含字符，除根节点外每一个节点都只包含一个字符。</p>
+</li>
+<li>
+<p>从根节点到某一节点，路径上经过的字符连接起来，为该节点对应的字符串。</p>
+</li>
+<li>
+<p>每个节点的所有子节点包含的字符都不相同。</p>
+</li>
+</ul>
+<h3 id="part-31插入操作">Part 3.1：插入操作</h3>
+<pre><code class="language-cpp">void add(char s[]){
+	int p=0;
+	for(int i=0;s[i];i++){
+		int v=getnum(s[i]);//为s[i]的值
+		if(!t[p][v])t[p][v]=++id;//id为节点编号
+		p=t[p][v];//迭代
+		cnt[p]++;
+	}
+}
+</code></pre>
+<h3 id="part-32查询操作">Part 3.2：查询操作</h3>
+<pre><code class="language-cpp">int find(char s[]){
+	int p=0;
+	for(int i=0;s[i];i++){
+		int v=getnum(s[i]);
+		if(!t[p][v])return 0;//没查到
+		p=t[p][v];
+	}
+	return cnt[p];
+}
+</code></pre>
+<h2 id="part-4ac自动机">Part 4：AC自动机</h2>
+<blockquote>
+<p>在字典树上跑KMP。</p>
+</blockquote>
+<p>在KMP中我们用 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>k</mi><mi>m</mi><msub><mi>p</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">kmp_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03148em;">k</span><span class="mord mathdefault">m</span><span class="mord"><span class="mord mathdefault">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 表示失配后跳到哪一位。</p>
+<p>那我们为什么不在字典树上构建一个类似的数组以解决多模式串匹配呢呢？</p>
+<p>直接上代码：</p>
+<p><em><strong>插入（和字典树一样awa）：</strong></em></p>
+<pre><code class="language-cpp">void add(char *s){
+	int u=0;
+	for(int i=0;s[i];i++){
+		int v=s[i]-'a';
+		if(!t[u][v])t[u][v]=++cnt;
+		u=t[u][v];
+	}
+	val[u]++;//统计数量
+}
+</code></pre>
+<p><em><strong>构建 fail 数组：</strong></em></p>
+<pre><code class="language-cpp">void build(){
+	queue&lt;int&gt; q;//因为要先处理出父亲节点的fail，所以用bfs
+	for(int i=0;i&lt;26;i++)
+		if(t[0][i])fail[t[0][i]]=0,q.push(t[0][i]);//与根节点相连的统一指向根节点
+	while(!q.empty()){
+        int u=q.front();q.pop();
+        for(int i=0;i&lt;26;i++)
+        if(t[u][i])fail[t[u][i]]=t[fail[u]][i],q.push(t[u][i]);//若有，fail则为其父亲节点失配后下一个为i的点
+        else t[u][i]=t[fail[u]][i];//不然，将其相连
+    }
+}
+</code></pre>
+<p><em><strong>匹配：</strong></em></p>
+<pre><code class="language-cpp">int query(char *s){
+    int len=strlen(s);
+	int u=0,ans=0;
+    for(int i=0;i&lt;len;i++){
+        u=t[u][s[i]-'a'];//跳
+        for(int t=u;t&amp;&amp;~val[t];t=fail[t])ans+=val[t],val[t]=-1;
+      //当此节点存在同时其cnt未被遍历
+      //将答案加上所搜索的字符串中所包含的该单词数
+      //标记
+    }
+    return ans;
+}
+</code></pre>
+<h2 id="part-5后缀数组">Part 5：后缀数组</h2>
+<p>首先，求后缀的排名 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>r</mi><mi>a</mi><mi>n</mi><msub><mi>k</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">rank_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">a</span><span class="mord mathdefault">n</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03148em;">k</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.03148em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> &amp; 这个后缀是第几名<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>s</mi><msub><mi>a</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">sa_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord mathdefault">s</span><span class="mord"><span class="mord mathdefault">a</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>。</p>
+<ul>
+<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>r</mi><mi>a</mi><mi>n</mi><msub><mi>k</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">rank_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">a</span><span class="mord mathdefault">n</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03148em;">k</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.03148em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 表示第 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>i</mi></mrow><annotation encoding="application/x-tex">i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathdefault">i</span></span></span></span> 个后缀的排名。</li>
+<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>s</mi><msub><mi>a</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">sa_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord mathdefault">s</span><span class="mord"><span class="mord mathdefault">a</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 表示第 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>i</mi></mrow><annotation encoding="application/x-tex">i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathdefault">i</span></span></span></span> 名是哪个后缀。</li>
+</ul>
+<p>所以该怎么做呢？</p>
+<h3 id="part-51暴力快排">Part 5.1：暴力快排</h3>
+<p>暴力存储所有后缀再排序，时间复杂度 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><msup><mi>n</mi><mn>2</mn></msup><mi>l</mi><mi>o</mi><mi>g</mi><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n^2logn)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">o</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span>。</p>
+<p>（其中快排 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mi>l</mi><mi>o</mi><mi>g</mi><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(nlogn)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">o</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span>，字符串比较 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span>）</p>
+<h3 id="part-52倍增快排">Part 5.2：倍增+快排</h3>
+<p>不说了，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mi>l</mi><mi>o</mi><mi>g</mi><mn>2</mn><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(nlog2n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">o</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mord">2</span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span>。</p>
+<h3 id="part-53倍增基数排序">Part 5.3：倍增+基数排序</h3>
+<p>主要讲这个 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mi>l</mi><mi>o</mi><mi>g</mi><mi>n</mi><mo>)</mo><mi mathvariant="normal">？</mi></mrow><annotation encoding="application/x-tex">O(nlogn)？</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">o</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mord mathdefault">n</span><span class="mclose">)</span><span class="mord cjk_fallback">？</span></span></span></span> 的算法。</p>
+<p>倍增，每次通过两个关键字进行基数排序。</p>
+<p>最后统计排名，并考虑并列的情况。</p>
+<p>当排出 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>n</mi></mrow><annotation encoding="application/x-tex">n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">n</span></span></span></span> 名了后退出即可。</p>
+<p><a href="https://www.luogu.com.cn/problem/P3809">luogu P3809 【模板】后缀排序</a></p>
+<h3 id="part-54求height">Part 5.4：求height</h3>
+<ul>
+<li>证明：h[i]&gt;=h[i-1]-1</li>
+</ul>
+<p><s>大佬的证明：</s></p>
+<blockquote>
+<p>首先我们不妨设第i-1个字符串按排名来的前面的那个字符串是第k个字符串，注意k不一定是i-2，因为第k个字符串是按字典序排名来的i-1前面那个，并不是指在原字符串中位置在i-1前面的那个第i-2个字符串。</p>
+</blockquote>
+<blockquote>
+<p>这时，依据height[]的定义，第k个字符串和第i-1个字符串的公共前缀自然是height[rk[i-1]]，现在先讨论一下第k+1个字符串和第i个字符串的关系。</p>
+</blockquote>
+<blockquote>
+<p>第一种情况，第k个字符串和第i-1个字符串的首字符不同，那么第k+1个字符串的排名既可能在i的前面，也可能在i的后面，但没有关系，因为height[rk[i-1]]就是0了呀，那么无论height[rk[i]]是多少都会有height[rk[i]]&gt;=height[rk[i-1]]-1，也就是h[i]&gt;=h[i-1]-1。</p>
+</blockquote>
+<blockquote>
+<p>第二种情况，第k个字符串和第i-1个字符串的首字符相同，那么由于第k+1个字符串就是第k个字符串去掉首字符得到的，第i个字符串也是第i-1个字符串去掉首字符得到的，那么显然第k+1个字符串要排在第i个字符串前面。同时，第k个字符串和第i-1个字符串的最长公共前缀是height[rk[i-1]]，</p>
+</blockquote>
+<blockquote>
+<p>那么自然第k+1个字符串和第i个字符串的最长公共前缀就是height[rk[i-1]]-1。</p>
+</blockquote>
+<blockquote>
+<p>到此为止，第二种情况的证明还没有完，我们可以试想一下，对于比第i个字符串的排名更靠前的那些字符串，谁和第i个字符串的相似度最高（这里说的相似度是指最长公共前缀的长度）？显然是排名紧邻第i个字符串的那个字符串了呀，即sa[rank[i]-1]。但是我们前面求得，有一个排在i前面的字符串k+1，LCP(rk[i],rk[k+1])=height[rk[i-1]]-1;</p>
+</blockquote>
+<blockquote>
+<p>又因为height[rk[i]]=LCP(i,i-1)&gt;=LCP(i,k+1)</p>
+</blockquote>
+<blockquote>
+<p>所以height[rk[i]]&gt;=height[rk[i-1]]-1，也即h[i]&gt;=h[i-1]-1。</p>
+</blockquote>
+<pre><code class="language-cpp">#include&lt;bits/stdc++.h&gt;
+using namespace std;
+const int N=1e6+5;
+int k=1,n,st[256],rank0[N&lt;&lt;1],cnt[N],tmp[N],sa[N],rank1[N],height[N];
+char str1[N];
+int main(){
+	scanf(&quot;%s&quot;,str1+1);
+	n=strlen(str1+1);
+	for(int i=1;i&lt;=n;i++)st[str1[i]]=1;//浅浅排一下第一个字符
+	for(int i=1;i&lt;=255;i++)st[i]+=st[i-1];
+	for(int i=1;i&lt;=n;i++)rank0[i]=st[str1[i]];
+	for(int p=1;k!=n;p=p*2){//倍增直到所有后缀都排出名来
+		memset(cnt,0,sizeof cnt);//按第二关键字排序
+		for(int i=1;i&lt;=n;i++)cnt[rank0[i+p]]++;
+		for(int i=1;i&lt;=n;i++)cnt[i]+=cnt[i-1];//前缀和
+		for(int i=n;i&gt;=1;i--)tmp[cnt[rank0[i+p]]--]=i;//第二关键字排序结果
+		memset(cnt,0,sizeof cnt);//按第一关键字排序
+		for(int i=1;i&lt;=n;i++)cnt[rank0[i]]++;
+		for(int i=1;i&lt;=n;i++)cnt[i]+=cnt[i-1];//前缀和
+		for(int i=n;i&gt;=1;i--)sa[cnt[rank0[tmp[i]]]--]=tmp[i];//第一关键字排序结果，也就是最终排序的结果sa[i]
+		k=1;
+		rank0[sa[1]]=k;//排名，第一个肯定为1
+		memcpy(rank1,rank0,sizeof(rank1));
+		for(int i=2;i&lt;=n;i++){
+			if(!(rank1[sa[i]]==rank1[sa[i-1]]&amp;&amp;rank1[sa[i]+p]==rank1[sa[i-1]+p]))k++;//检测两个关键字是否相同，若相同则排名相同
+			rank0[sa[i]]=k;
+		}
+	}
+  	k=0;//开始求height
+	for(int i=1;i&lt;=n;i++){
+		if(rank0[i]==1)continue;//第一名height为0
+		if(k)k--;//h[i]&gt;=h[i-1]-1;
+		while(str1[i+k]==str1[sa[rank0[i]-1]+k])k++;
+		height[rank0[i]]=k;
+	}
+	for(int i=1;i&lt;=n;i++)
+		printf(&quot;%d%c&quot;,sa[i],(i==n)?'\n':' ');
+	return 0;
+}
+</code></pre>
+<h2 id="part-6后缀自动机">Part 6：后缀自动机</h2>
+<p>自己学去，劳资不会。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【2023AFO纪念】AFO了在做什么？有没有空？可以重新再来吗？]]></title>
+        <id>https://yydcc-blog.github.io/post/2023afo-ji-nian-afo-liao-zai-zuo-shi-me-you-mei-you-kong-ke-yi-chong-xin-zai-lai-ma/</id>
+        <link href="https://yydcc-blog.github.io/post/2023afo-ji-nian-afo-liao-zai-zuo-shi-me-you-mei-you-kong-ke-yi-chong-xin-zai-lai-ma/">
+        </link>
+        <updated>2023-10-22T03:48:05.000Z</updated>
+        <content type="html"><![CDATA[<blockquote>
+<p>这是一位浙江OIer与他爱的OI的故事</p>
+</blockquote>
+<h1 id="part-0在太阳西斜的这个日子里">Part 0：在太阳西斜的这个日子里</h1>
+<figure data-type="image" tabindex="1"><img src="https://yydcc-blog.github.io//post-images/1697947153266.jpg" alt="" loading="lazy"></figure>
+<p>这7年真是多谢你了...<br>
+让我体验了许多美好...<br>
+我留下了如同美梦一般的回忆 不过时间到了...<br>
+最后我还想拜托你一件事...<br>
+希望你可以把我忘掉...</p>
+<p>在自己AFO之前...<br>
+心怀不想消失的愿望...<br>
+希望让OI记住我...<br>
+希望能留下羁绊...<br>
+我这么希望着，又有什么不可以的吗...</p>
+<h1 id="part-1置身繁杂人间">Part 1：置身繁杂人间</h1>
+<blockquote>
+<p>梦开始的地方</p>
+</blockquote>
+<p>依稀记得自己接触OI还是在小学三年级，准备从<code>Scratch</code>转型到<code>C++</code>。<br>
+找了许多机构培训，渐渐体会到最为一个OIer的乐趣。<br>
+第一次打开自己的电脑，第一次打开IDE......许多场景仍记忆犹新。<br>
+也是从那时开始，发现自己，已经深深爱上了OI。</p>
+<p>而学习OI中的乐趣不仅如此：</p>
+<ul>
+<li>第一次接触到自己的电脑，那时连自己的手机也没有，那第一部电脑从此陪伴了7年。</li>
+<li>交到许多朋友，有先辈也有后辈，也许他们比我在学校的同学，或许更重要吧...</li>
+</ul>
+<h1 id="part-2等这场比赛结束之后">Part 2：等这场比赛结束之后</h1>
+<blockquote>
+<p>没有谁的人生是一帆风顺的</p>
+</blockquote>
+<p>竞赛，仍是学习<code>C++</code>最大的用处之一。<br>
+最初只是报名参加一些市级区级的比赛。（那时还有）<br>
+即使失败了也不会那么的难过...<br>
+直到<br>
+2018年的那场初赛开始，我的精神被渐渐摧毁...</p>
+<h2 id="part21noip2018-初赛">Part2.1：NOIP2018-初赛</h2>
+<p>第一次参加CCF举办的比赛，有些紧张。<br>
+但我任然很有信心，自己几个月的准备将在这一天展现出来。<br>
+比赛地点在宁波诺丁汉大学，上午下午两场初赛都打了。<br>
+回家的路上我还天真的以为自己能顺利通过。</p>
+<p>结果下来后，我崩溃了。<br>
+也可能是那时心智还不成熟吧，我异常的狂暴。<br>
+没有好好分析自己的错误，将错就错，这也直接导致了：</p>
+<h2 id="part22csp2019-初赛">Part2.2：CSP2019-初赛</h2>
+<p>算法学得越来越多，题目刷的越来越多。<br>
+但我还是没有改掉粗心的老毛病。<br>
+模拟赛中不知有多少次因没有去除<code>freopen</code>前的<code>//</code>或是***文件夹名字写错（这是重点...要考的...qAq）***而丢失大量分数。<br>
+每次都是无能的发怒，将我的心彻底填满，没有一点理智。<br>
+也是到初赛成绩出来后，发现自己的同龄人甚至后辈赶超了自己。<br>
+愤怒逐渐变质，变成无尽的悲伤、沮丧、后悔。</p>
+<p>从那以后，我，再也没发过火...</p>
+<h2 id="part23csp2020-初赛">Part2.3：CSP2020-初赛</h2>
+<p>小升初不再可以通过竞赛加分了，改为摇号，不能自主选拔。</p>
+<p>说是幸运还是不幸好呢...升入了一个比较一般的学校。<br>
+没有太大的文化课压力，使我能在OI上花更多的时间。<br>
+俗话说，飞的越高，摔得越惨。</p>
+<p>如你们所料，这次初赛我仍未通过。<br>
+我不再发怒，唯一能做的就是躲在被窝里哭泣。<br>
+面对第三次失败，我已经再也受不了了。</p>
+<h1 id="part-3不归之人与望眼欲穿的人们">Part 3：不归之人与望眼欲穿的人们</h1>
+<blockquote>
+<p>从此改变，I need power。</p>
+</blockquote>
+<p>镇海中学，宁波OIer向往的地方。<br>
+对于一个初中生，向往的便是可以说是镇海中学附属中学的蛟川书院了。<br>
+我需要一个更有竞争力的环境来磨练自己，所以我放弃了寒暑假的大部分时间，只为锻炼自己，变得更强。<br>
+这时回收过去，才发现，已经无法回头......</p>
+<figure data-type="image" tabindex="2"><img src="https://yydcc-blog.github.io//post-images/1697948498073.jpg" alt="" loading="lazy"></figure>
+<h1 id="part-4人人本着变强之名">Part 4：人人本着变强之名</h1>
+<h2 id="part-41变强">Part 4.1：变强。</h2>
+<blockquote>
+<p>总有比你更强的人，而那个人总会在你的身边......</p>
+</blockquote>
+<p>内卷，成为了学生口中常说的一个词。<br>
+OI更是如此。<br>
+你不卷，就会被别人超越。<br>
+每当听到有人在谈论我不知道的算法时，巨大的压力便向我袭来。</p>
+<h2 id="part-42变强">Part 4.2：变强？</h2>
+<blockquote>
+<p>总有人用着比你更高级的摸鱼方法，而那个人总会在你的身边......</p>
+</blockquote>
+<p>在这样一个环境中，摸鱼，反而成了常态。<br>
+发泄压力，获得喜悦。<br>
+我也是如此。</p>
+<h2 id="part-43csp2021-j-开始">Part 4.3：CSP2021-J 开始</h2>
+<p>这次是压线进的。<br>
+以下是我当时写的游记：</p>
+<h3 id="day-27">Day -27：</h3>
+<p>今年复赛终于进了，压线两分。<br>
+我觉得只要进了就好，没别的要求。<br>
+S组差亿点点QWQ。</p>
+<h3 id="day-26">Day -26：</h3>
+<p>开始准备复赛。<br>
+搞了一些网课什么的，模拟赛打一打。鱼摸一摸</p>
+<h3 id="day-1-afternoon">Day -1 afternoon：</h3>
+<p>逃了学校的两堂课，直接出发去酒店。<br>
+晚上大吃一顿然后看看防爆零事项什么的。<br>
+总体来说准备很充分，剩下的看老天爷了。</p>
+<h3 id="day-1-night">Day -1 night：</h3>
+<p>杭州真的好热，晚上有睡没睡的。</p>
+<h3 id="day-1-morning">Day 1 morning：</h3>
+<p>在酒店大堂吃了顿早餐就出发了。<br>
+在门口遇见一堆大佬（wjz ghj yjy sk）<br>
+进场时绕了好久，在考场外等了好久。</p>
+<h3 id="day-1-csp-j-2021">Day 1 CSP-J-2021：</h3>
+<p>今年出题人是真的良心。<br>
+四道题三道模拟一道暴力。（bushi）<br>
+T1就是一道数学题，模几个样例就想到做法了。<br>
+然后我先做了T3，根据大样例找了好久的错。<br>
+这时比赛已经过半了（T3 98行代码自愧不如）<br>
+T2读了好久的题，草稿纸都快写满了。<br>
+突然发现好水然后测了大样例就去做T4了。<br>
+T4链表写炸，最后用了个暴力。<br>
+一开始直接用肉眼看大样例答案，后来想到可以用cmd的fc，但又不会改目录，就写了一个check来判断。</p>
+<h3 id="day-1-noon">Day 1 noon：</h3>
+<p>比完后在附近吃了饭，然后就退房返城。</p>
+<h3 id="day-n">Day n:</h3>
+<p>洛谷自测300+<br>
+J组1=，满足了</p>
+<h2 id="part-44csp2021-j-结束">Part 4.4：CSP2021-J 结束</h2>
+<p>现在看到当时的我，又有一番别的感觉。<br>
+是对自己过去的欣慰呢还是因现在的自己没有完成过去的心愿而愧疚呢...</p>
+<p>对 不 住 了，过 去 的 我。</p>
+<p>因为：</p>
+<h1 id="part-5长存不灭的过去逐渐消逝的未来">Part 5：长存不灭的过去，逐渐消逝的未来</h1>
+<blockquote>
+<p>并不是OI变得更简单了，而是我，变得更坚强了</p>
+</blockquote>
+<p>又是和往年一样努力的一年。</p>
+<h2 id="part-51csp2022-s">Part 5.1：CSP2022-S</h2>
+<p>目标：S1=。<br>
+结果：S2=。<br>
+明明是自己会的算法，在考场上却写不出来。<br>
+绝望，还是绝望。<br>
+被后辈超越，被先辈薄纱。<br>
+第一次怀疑自己是不是走上了一条错误的路。</p>
+<h2 id="part-52afo">Part 5.2：AFO?</h2>
+<p>暂时放下了OI，补文化课去了。<br>
+刚开始有些煎熬，却逐渐被中考的压力压得直不起身。<br>
+可就是这暂时的放弃，让我的对OI的爱，渐渐变为虚无。</p>
+<h1 id="part-6我回来了">Part 6：我回来了</h1>
+<blockquote>
+<p>机会，往往是给有准备的人的</p>
+</blockquote>
+<p>考上西交大少年班，免除中高考，来到了南开中学。<br>
+天津，竞赛弱省，我再一次看到了重回OI的希望。<br>
+但愿这希望，不会成为绝望...</p>
+<figure data-type="image" tabindex="3"><img src="https://yydcc-blog.github.io//post-images/1697947129127.jpg" alt="" loading="lazy"></figure>
+<h1 id="part-7纵使日薄西山">Part 7：纵使日薄西山</h1>
+<p>我意识到，CSP2023，可能，是我的最后一场的，CCF的比赛了吧...<br>
+这次，一定要，好好努力了，对吧？<br>
+国庆+中午+晚自习，不停的刷题。<br>
+只为能给自己一个好的交代。<br>
+但是：</p>
+<h1 id="part-8即便看不到未来">Part 8：即便看不到未来</h1>
+<p>读完题目后，我没有因题目的难度感到惊讶。<br>
+而是，最后支撑着我的那一点信念，彻底破碎。</p>
+<p>我没能遵守...</p>
+<p>约...约定</p>
+<p>可我已经...非常...非常努力了吧...</p>
+<h1 id="part-9此时此刻的光辉">Part 9：此时此刻的光辉</h1>
+<p>没想到是以这种方式结束。</p>
+<p>准考证号，写错了。</p>
+<p>哈...呵呵呵...</p>
+<figure data-type="image" tabindex="4"><img src="https://yydcc-blog.github.io//post-images/1697948514759.jpg" alt="" loading="lazy"></figure>
+<h1 id="part-10盼君勿忘">Part 10：盼君勿忘</h1>
+<blockquote>
+<p>至我最爱的OI</p>
+</blockquote>
+<p>究竟要怎样</p>
+<p>才能将这份爱意铭刻在OI上？</p>
+<p>所学习到的</p>
+<p>尽是陌生的算法</p>
+<p>也请教我如何遗忘</p>
+<p>并非仅用语言而已</p>
+<p>还有那颤抖的手指的温度</p>
+<p>那又是谁的希望？</p>
+<p>自我心间满溢而出的心愿点滴</p>
+<p>就算几度消散隐没</p>
+<p>仍旧会不断地涌现</p>
+<p>没有答案的残酷未来</p>
+<p>将要到来的是第几个暴零呢</p>
+<p>若是身处陌生机房</p>
+<p>便想要被人呼唤我的名字</p>
+<p>因为胸口传来阵阵疼痛</p>
+<p>好似要撕心裂肺</p>
+<p>究竟要怎样</p>
+<p>才能将这份爱意铭刻在OI上？</p>
+<p>在我终有一天</p>
+<p>Away From OI之前</p>
+<p>心怀强烈的思念</p>
+<p>想要去守护此时此刻的理由</p>
+<p>不过是我想要更长久地守望着你</p>
+<p>我不需要什么恰到好处的AK</p>
+<p>甜美谎言所掩盖的伤痛</p>
+<p>若是能够并肩承担</p>
+<p>嘴边咽下的叹息也有了意义</p>
+<p>而后化作一场幻梦</p>
+<p>想要传达给你的誓言的点滴</p>
+<p>无法实现这一点</p>
+<p>虽已有所察觉</p>
+<p>但是啊我仍将献上祈祷</p>
+<p>即使是无法永恒的存在</p>
+<p>也想在命途多舛中</p>
+<p>寻求那真切的光芒</p>
+<p>想更多地和OI在一起</p>
+<p>即便世界毁灭</p>
+<p>不论何时</p>
+<p>爱在心上都是情不自已</p>
+<p>我一刻不停</p>
+<p>是在找寻着什么呢？</p>
+<p>虽然而今已是</p>
+<p>面临那无尽黑暗的时刻</p>
+<p>但在那之前就陪在你身旁吧</p>
+<p>将目光定格你身上</p>
+<p>如果二字刚说出口</p>
+<p>声音便伴在风中渐行渐弱</p>
+<p>好想向你倾诉我的所有</p>
+<p>好想默默将你拥入怀抱</p>
+<p>但是光阴流转所呈现的</p>
+<p>却是擦身而过渐行渐远的自己</p>
+<p>究竟要怎样</p>
+<p>才能将这爱铭刻OI上？</p>
+<p>不论何时</p>
+<p>爱在心上都是情不自已</p>
+<p>我一刻不停</p>
+<p>是在找寻着什么呢？</p>
+<p>心怀强烈的思念</p>
+<p>想要去守护此时此刻的理由</p>
+<p>不过是我想要更长久地守望着你</p>
+<p>Away From OI之前</p>
+<h1 id="part-11世上最幸福的oier">Part 11：世上最幸福的OIer</h1>
+<blockquote>
+<p>其实这个Part就是后记啦awa</p>
+</blockquote>
+<p>10月21号高考完就认清了事实，将自己这7年发自内心的感慨写了下来。</p>
+<p>之后若我想起其他事也会补充上来。</p>
+<p>是时候该退役了。</p>
+<p>非常感谢这一路以来陪伴我的父母、同学、老师、学校、各大OJ。</p>
+<p>也感谢看完全文的读者们（是不是有点水awa）。</p>
+<p>我已经，没有任何遗憾了。</p>
+<p>我还是深深爱着OI的哦awa</p>
+<p>但是，是时候说再见了。</p>
+<p>希望有朝一日，我能，再次踏上这个舞台。</p>
+<h1 id="away-from-oi-at-20231021">Away From OI at 2023/10/21</h1>
+<figure data-type="image" tabindex="5"><img src="https://yydcc-blog.github.io//post-images/1697948900781.png" alt="" loading="lazy"></figure>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[那些你必须会的模板II]]></title>
+        <id>https://yydcc-blog.github.io/post/na-xie-ni-bi-xu-hui-de-mo-ban-ii/</id>
+        <link href="https://yydcc-blog.github.io/post/na-xie-ni-bi-xu-hui-de-mo-ban-ii/">
+        </link>
+        <updated>2023-09-07T04:47:47.000Z</updated>
+        <content type="html"><![CDATA[<p>最短路篇</p>
+<h1 id="floyd-spfa-and-dijkstra">Floyd、SPFA and Dijkstra</h1>
+<h2 id="松弛操作">松弛操作</h2>
+<p>最短路核心操作，可以理解成三角形的三边关系的翻版。（两边之和大于第三边-&gt;取两边之和和第三边的最小值）</p>
+<h2 id="floyd-多源最短路">Floyd 多源最短路</h2>
+<p>时间复杂度：<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><msup><mi>n</mi><mn>3</mn></msup><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n^3)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span></p>
+<p>使用邻接矩阵，枚举中转点和两个点，更新这两个点之间的最短距离：<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>m</mi><mi>i</mi><mi>n</mi><mo>(</mo><mi>d</mi><mi>i</mi><msub><mi>s</mi><mrow><mi>x</mi><mo>−</mo><mi>y</mi></mrow></msub><mo separator="true">,</mo><mi>d</mi><mi>i</mi><msub><mi>s</mi><mrow><mi>x</mi><mo>−</mo><mi>k</mi></mrow></msub><mo>+</mo><mi>d</mi><mi>i</mi><msub><mi>s</mi><mrow><mi>k</mi><mo>−</mo><mi>y</mi></mrow></msub><mo>)</mo></mrow><annotation encoding="application/x-tex">min(dis_{x-y},dis_{x-k}+dis_{k-y})</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.036108em;vertical-align:-0.286108em;"></span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mopen">(</span><span class="mord mathdefault">d</span><span class="mord mathdefault">i</span><span class="mord"><span class="mord mathdefault">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.25833100000000003em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">x</span><span class="mbin mtight">−</span><span class="mord mathdefault mtight" style="margin-right:0.03588em;">y</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault">d</span><span class="mord mathdefault">i</span><span class="mord"><span class="mord mathdefault">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361079999999999em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">x</span><span class="mbin mtight">−</span><span class="mord mathdefault mtight" style="margin-right:0.03148em;">k</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.208331em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.036108em;vertical-align:-0.286108em;"></span><span class="mord mathdefault">d</span><span class="mord mathdefault">i</span><span class="mord"><span class="mord mathdefault">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361079999999999em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.03148em;">k</span><span class="mbin mtight">−</span><span class="mord mathdefault mtight" style="margin-right:0.03588em;">y</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span></p>
+<p>代码过于简单不放了awa</p>
+<h2 id="spfa-它死了考场慎用">SPFA 它死了（考场慎用）</h2>
+<p>时间复杂度：最差<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mi>m</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(nm)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mord mathdefault">m</span><span class="mclose">)</span></span></span></span></p>
+<p>会被卡死。（有谷民甚至卡到200s）</p>
+<p>真正用SPFA来解决最短路的很少，主要来处理有负权，判断正负环，差分约束。</p>
+<p>使用桟或队列实现。（在有负环的情况下，栈比队列更快，但是如果没有负环的一般情况下，队列更快。）</p>
+<h3 id="桟实现spfa">桟实现SPFA</h3>
+<p>这和dfs有什么区别awa</p>
+<p>代码如下：</p>
+<pre><code class="language-cpp">void spfa(int u){
+	vis[u]=1;
+	for(int e=head[u];e;e=nxt[e]){
+		int v=to[e];
+		if(dis[v]&gt;dis[u]+sum[e]){
+			dis[v]=dis[u]+sum[e];
+			if(!vis[v])spfa(v);
+		}
+	}
+	vis[u]=0;
+}
+</code></pre>
+<h3 id="队列实现spfa">队列实现SPFA</h3>
+<p>先把源点进队，然后用源点扩展更新，能迭代的都进队……<br>
+就是用队列里的点去迭代其他点，被迭代的点再次进队。</p>
+<p>代码如下：</p>
+<pre><code class="language-cpp">void SPFA(){
+	for(int i=1;i&lt;=m;i++)
+		dis[i]=2147483647;
+	dis[t]=0;
+	Q.push(t);
+	vis[t]=1;
+	while(!Q.empty()){
+		int u=Q.front();
+		Q.pop();
+		vis[u]=0;
+		for(int i=head[u];i;i=e[i].nex){
+			int v=e[i].to;
+			if(dis[v]&gt;dis[u]+e[i].len){
+				dis[v]=dis[u]+e[i].len;
+				if(!vis[v]){
+					Q.push(v);
+					vis[v]=1;
+				}
+			}
+		}
+	}
+}
+</code></pre>
+<h3 id="spfa拓展">SPFA拓展</h3>
+<h4 id="判断负环">判断负环</h4>
+<p>朴素做法：直接桟实现SPFA判断是否有重复松弛即可。</p>
+<p>优化想法：</p>
+<p>我们只需要找到权值和为负的回路，那不妨使距离数组 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>d</mi><mi>i</mi><mi>s</mi></mrow><annotation encoding="application/x-tex">dis</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault">d</span><span class="mord mathdefault">i</span><span class="mord mathdefault">s</span></span></span></span> 初始化为 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>0</mn></mrow><annotation encoding="application/x-tex">0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>。<br>
+这样处理后，第一次拓展只会拓展到与起点相连边权为负的边。<br>
+那么我们就分别枚举所有的点作为起点，如果已经找到一个负环就不再继续枚举。<br>
+根据SPFA，我们找到的负环一定包含当前枚举的这个点。</p>
+<h4 id="差分约束">差分约束</h4>
+<p>不讲awa</p>
+<h2 id="dijkstra-不会被卡但不能处理负权值">Dijkstra 不会被卡，但不能处理负权值。</h2>
+<p>使用 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>d</mi><mi>i</mi><mi>s</mi></mrow><annotation encoding="application/x-tex">dis</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault">d</span><span class="mord mathdefault">i</span><span class="mord mathdefault">s</span></span></span></span> 表示源点到每个点的最短距离。（初始为无限大，自己到自己为0）</p>
+<p>每次找一个 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>d</mi><mi>i</mi><mi>s</mi></mrow><annotation encoding="application/x-tex">dis</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault">d</span><span class="mord mathdefault">i</span><span class="mord mathdefault">s</span></span></span></span> 值最小的没用过的点 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span>,遍历 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 的所有出边进行松弛操作即可。</p>
+<p>因此可以用堆优化到 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mi>l</mi><mi>o</mi><mi>g</mi><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n log n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">o</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span>。</p>
+<p>代码如下：</p>
+<pre><code class="language-cpp">void dij(int x){
+	for(int i=1;i&lt;=n;i++)
+		dis[i]=(i==x)?0:1e9;
+	priority_queue&lt;pair&lt;int,int&gt; &gt; q;
+	q.push(make_pair(0,x));
+	while(!q.empty()){
+		int u=q.top().second;
+		q.pop();
+		if(vis[u])continue;
+		vis[u]=1;
+		for(int e=head[u];e;e=nxt[e]){
+			int v=to[e];
+			if(dis[v]&gt;dis[u]+sum[e]){
+				dis[v]=dis[u]+sum[e];
+				q.push(make_pair(-dis[v],v));
+			}
+		}
+	}
+}
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[那些你必须会的模板I]]></title>
+        <id>https://yydcc-blog.github.io/post/na-xie-ni-bi-xu-hui-de-mo-ban-i/</id>
+        <link href="https://yydcc-blog.github.io/post/na-xie-ni-bi-xu-hui-de-mo-ban-i/">
+        </link>
+        <updated>2023-09-06T13:12:11.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="并查集-快速幂-and-线性筛素数">并查集、快速幂 and 线性筛素数。</h1>
+<h2 id="并查集">并查集</h2>
+<h3 id="描述">描述</h3>
+<p><code>如题，现在有一个并查集，你需要完成合并和查询操作。</code></p>
+<p>也就是说我们要维护集合的操作，那该怎么做呢？</p>
+<h3 id="实现">实现</h3>
+<p>我们用 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>f</mi><msub><mi>a</mi><mi>x</mi></msub></mrow><annotation encoding="application/x-tex">fa_x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.10764em;">f</span><span class="mord"><span class="mord mathdefault">a</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">x</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 表示 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 的从属关系。（一开始 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>f</mi><msub><mi>a</mi><mi>x</mi></msub><mo>=</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">fa_x=x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.10764em;">f</span><span class="mord"><span class="mord mathdefault">a</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">x</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span>，也就是自己一个元素一个集合）</p>
+<p>将 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 所属的集合和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>y</mi></mrow><annotation encoding="application/x-tex">y</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">y</span></span></span></span> 所属的集合合并时，即让 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>f</mi><msub><mi>a</mi><mi>y</mi></msub></mrow><annotation encoding="application/x-tex">fa_y</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.980548em;vertical-align:-0.286108em;"></span><span class="mord mathdefault" style="margin-right:0.10764em;">f</span><span class="mord"><span class="mord mathdefault">a</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.15139200000000003em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.03588em;">y</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span> 变为 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 所属集合的最顶部的 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>f</mi><msub><mi>a</mi><mrow><mi>t</mi><mi>o</mi><mi>p</mi></mrow></msub></mrow><annotation encoding="application/x-tex">fa_{top}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.980548em;vertical-align:-0.286108em;"></span><span class="mord mathdefault" style="margin-right:0.10764em;">f</span><span class="mord"><span class="mord mathdefault">a</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.28055599999999997em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">t</span><span class="mord mathdefault mtight">o</span><span class="mord mathdefault mtight">p</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span>。（也可以理解成连上去）</p>
+<p>代码如下：</p>
+<pre><code class="language-cpp">int Find(int a){
+	if(a==fa[a])return a;
+	return Find(fa[a]);
+}
+
+fa[y]=Find(x);
+</code></pre>
+<p><em><strong>路径压缩</strong></em></p>
+<p>在<code>Find(a)</code>的过程中将路径上的所有点直接连到最高点。（可以理解成从一条链压缩成菊花图）</p>
+<p>代码如下：</p>
+<pre><code class="language-cpp">int Find(int a){
+	if(a==fa[a])return a;
+	return fa[a]=Find(fa[a]);
+}
+</code></pre>
+<h2 id="快速幂">快速幂</h2>
+<h3 id="描述-2">描述</h3>
+<p><code>快速求幂awa</code></p>
+<h3 id="实现-2">实现</h3>
+<p>就是指数除2底数平方。</p>
+<p>直接上代码：</p>
+<pre><code class="language-cpp">int fpower(int x,int y,int mod){
+	int ans=1;
+	while(y){
+		if(y%2)ans=ans*x%mod;//奇数单独处理
+		x=x*x%mod;
+		y&gt;&gt;=1;
+	}
+	return ans;
+}
+</code></pre>
+<h2 id="线性筛素数">线性筛素数</h2>
+<h3 id="描述-3">描述</h3>
+<p><code>如题，给定一个范围 n，有 q 个询问，每次输出第 k 小的素数。</code></p>
+<p>最朴素的筛法：埃氏筛。</p>
+<p>每次将素数的倍数筛去，因为会有很多被重复筛的数，最好也只能做到 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mi>l</mi><mi>o</mi><mi>g</mi><mi>l</mi><mi>o</mi><mi>g</mi><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n log log n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">o</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">o</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span>。</p>
+<p>在 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>1</mn><msup><mn>0</mn><mn>8</mn></msup></mrow><annotation encoding="application/x-tex">10^8</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord"><span class="mord">0</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">8</span></span></span></span></span></span></span></span></span></span></span> 这个阶级会超时。</p>
+<p>所以我们考虑下面这种做法。</p>
+<h3 id="分析">分析</h3>
+<p><em><strong>欧拉筛</strong></em></p>
+<p>考虑每个合数只被筛一次。</p>
+<p>原则：这个合数只会被它的最大非自身因数（对应最小质因数）筛。</p>
+<p>每次循环已经筛过的质数去乘当前的数，当这个数为质数的倍数时停止。</p>
+<p>此时这个质数为它的最小质因数，符合原则。</p>
+<p>但下一个质数不符合，这个合数可以拆分出为比这个质数更小的质数（上一个）。</p>
+<p>代码实现如下：</p>
+<pre><code class="language-cpp">for(int i=2;i&lt;=n;i++){
+	if(!flag[i])prime[++cnt]=i;
+	for(int j=1;j&lt;=cnt&amp;&amp;i*prime[j]&lt;=n;j++){
+		flag[i*prime[j]]=1;
+		if(!i%prime[j])break;
+	}
+}
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[不单调的单调队列]]></title>
+        <id>https://yydcc-blog.github.io/post/bu-dan-diao-de-dan-diao-dui-lie/</id>
+        <link href="https://yydcc-blog.github.io/post/bu-dan-diao-de-dan-diao-dui-lie/">
+        </link>
+        <updated>2023-03-29T03:53:14.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="前言">前言</h1>
+<p>单调队列的用处非常广泛！</p>
+<p>今天也要加油哦ヾ(◍°∇°◍)ﾉﾞ</p>
+<h1 id="定义">定义</h1>
+<p>维护一个队列，使其保持降序或升序状态。</p>
+<p><code>queue</code>：队列数组。</p>
+<p><code>head</code>：队列头下标。</p>
+<p><code>tail</code>：队列尾下标。</p>
+<h1 id="例题">例题</h1>
+<h2 id="洛谷p1886-滑动窗口-模板单调队列">洛谷P1886 滑动窗口 /【模板】单调队列</h2>
+<p>单调队列模板题，维护两个队列，一个升序一个降序。</p>
+<p>每次先将不在范围内的元素出队，即 <code>head++</code>。</p>
+<p>再维护单调性，将破坏单调性的去除，即 <code>tail--</code>。</p>
+<p>然后入队：<code>queue[++tail]=i</code>。（入队的要为原数组下标）</p>
+<p>最值即为队头：<code>queue[head]</code>。</p>
+<h2 id="洛谷p1714-切蛋糕">洛谷P1714 切蛋糕</h2>
+<p>暴力做法：前缀和，再枚举起点终点求最值即可。</p>
+<p>但这显然会超时。</p>
+<p>对于每一个前缀和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>s</mi><mi>u</mi><msub><mi>m</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">sum_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord mathdefault">s</span><span class="mord mathdefault">u</span><span class="mord"><span class="mord mathdefault">m</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>，以这个为结尾的最大值就为它减去前面区间的最小值，即 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>s</mi><mi>u</mi><msub><mi>m</mi><mi>i</mi></msub><mo>−</mo><mi>m</mi><mi>i</mi><mi>n</mi><mo>(</mo><mi>s</mi><mi>u</mi><msub><mi>m</mi><mi>j</mi></msub><mo>)</mo><mo>(</mo><mi>i</mi><mo>−</mo><mo>[</mo><mi mathvariant="normal">区</mi><mi mathvariant="normal">间</mi><mi mathvariant="normal">长</mi><mi mathvariant="normal">度</mi><mo>]</mo><mo>−</mo><mn>1</mn><mo>&lt;</mo><mi>j</mi><mo>&lt;</mo><mi>i</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">sum_i - min(sum_{j}) (i-[区间长度]-1&lt;j&lt;i)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.73333em;vertical-align:-0.15em;"></span><span class="mord mathdefault">s</span><span class="mord mathdefault">u</span><span class="mord"><span class="mord mathdefault">m</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.036108em;vertical-align:-0.286108em;"></span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mopen">(</span><span class="mord mathdefault">s</span><span class="mord mathdefault">u</span><span class="mord"><span class="mord mathdefault">m</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.311664em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.05724em;">j</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mopen">(</span><span class="mord mathdefault">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord cjk_fallback">区</span><span class="mord cjk_fallback">间</span><span class="mord cjk_fallback">长</span><span class="mord cjk_fallback">度</span><span class="mclose">]</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68354em;vertical-align:-0.0391em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.85396em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.05724em;">j</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault">i</span><span class="mclose">)</span></span></span></span>。</p>
+<p>所以用一个单调队列维护最小值即可。</p>
+<h2 id="洛谷p2698-usaco12marflowerpot-s">洛谷P2698 [USACO12MAR]Flowerpot S</h2>
+<p>我们用两个优先队列，一个存区间最大值，一个存区间最小值。</p>
+<p>最外层循环拉左端点（因为要里面右端点移完再动左端点）</p>
+<p>每次先用两个while循环更新队首,直到队首不在左端点左边（因为移动了左端点有一个点的值就不能用了）</p>
+<p>然后第二层循环移动右端点，直到达到右边界或满足条件（最大值-最小值 &gt; d）。</p>
+<p>里面再用两个循环类似滑动窗口更新最大值队列和最小值队列（只要队中还有元素且新加入的元素比队尾大（维护最大值时为小）那么就队尾出队，不需要管队首出队（这是更新左端点做的事情））。</p>
+<p>第二层循环结束后，如果满足条件就更新 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>a</mi><mi>n</mi><mi>s</mi></mrow><annotation encoding="application/x-tex">ans</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">a</span><span class="mord mathdefault">n</span><span class="mord mathdefault">s</span></span></span></span> 。（<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>a</mi><mi>n</mi><mi>s</mi></mrow><annotation encoding="application/x-tex">ans</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">a</span><span class="mord mathdefault">n</span><span class="mord mathdefault">s</span></span></span></span> 要初始化成一个很大的值）。</p>
+<p>一切结束后如果 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>a</mi><mi>n</mi><mi>s</mi></mrow><annotation encoding="application/x-tex">ans</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">a</span><span class="mord mathdefault">n</span><span class="mord mathdefault">s</span></span></span></span> 还是初始值，就输出 “-1”，否则输出 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>a</mi><mi>n</mi><mi>s</mi></mrow><annotation encoding="application/x-tex">ans</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">a</span><span class="mord mathdefault">n</span><span class="mord mathdefault">s</span></span></span></span> 。</p>
+<h1 id="总结">总结</h1>
+<p>用单调队列优化DP非常常见。</p>
+<p>题单就放在这里啦：<a href="https://www.luogu.com.cn/training/209636#problems">link</a></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[线段树，从入门倒退坑-贰]]></title>
+        <id>https://yydcc-blog.github.io/post/xian-duan-shu-cong-ru-men-dao-tui-keng-er/</id>
+        <link href="https://yydcc-blog.github.io/post/xian-duan-shu-cong-ru-men-dao-tui-keng-er/">
+        </link>
+        <updated>2022-08-02T03:53:24.000Z</updated>
+        <content type="html"><![CDATA[<blockquote>
+<p>此文章介绍的均为加法操作</p>
+</blockquote>
+<h1 id="前言">前言：</h1>
+<p>上篇文章介绍了线段树的基础操作。</p>
+<p>其中区间修改用递归的方式一层层修改（类似于线段树的建立），但这样的时间复杂度比较高。</p>
+<p>所以这篇文章引入一个新概念：懒惰标记。</p>
+<p>今天也要加油哦！😙</p>
+<h1 id="part-3懒惰标记lazy_tag">Part 3：懒惰标记（lazy_tag）</h1>
+<h2 id="part-31概念引入">Part 3.1：概念引入</h2>
+<p>使用懒惰标记，对于那些正好是线段树节点的区间，我们不继续递归下去，而是打上一个标记，将来要用到它的子区间的时候，再向下传递。</p>
+<h2 id="part-32分析">Part 3.2：分析</h2>
+<p>首先定义一个标记数组：<code>tag[这里的下标和线段树一样]</code></p>
+<p>表示这一段区间打上的标记。</p>
+<p>接下来介绍标记的几种操作。</p>
+<h3 id="part-321-标记的传递">Part 3.2.1: 标记的传递</h3>
+<p>对于区间 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>l</mi></mrow><annotation encoding="application/x-tex">l</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span></span></span></span> 到 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>r</mi></mrow><annotation encoding="application/x-tex">r</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span></span></span></span>，懒惰标记为 <code>tag[p]</code>。</p>
+<p>分别传递到左右区间的标记：<code>tag[p&lt;&lt;1]+=tag[p];tag[p&lt;&lt;1|1]+=tag[p];</code>。</p>
+<p>再将左右区间的值改变：<code>ans[p&lt;&lt;1]+=tag[p]*(mid-l+1);ans[p&lt;&lt;1|1]+=tag[p]*(r-mid);</code>。</p>
+<p>最后删除原来的标记：<code>tag[p]=0;</code>。</p>
+<h3 id="part-321结合">Part 3.2.1：结合</h3>
+<p>在区间求和和区间修改的每次分治前下放标记。</p>
+<p>区间修改时要再加上标记即可。</p>
+<h2 id="part-33代码总结">Part 3.3：代码总结</h2>
+<pre><code class="language-cpp">inline ll ls(ll x){
+    return x&lt;&lt;1;
+}
+inline ll rs(ll x){
+    return x&lt;&lt;1|1;
+}
+inline void push_up(ll p){
+    ans[p]=ans[ls(p)]+ans[rs(p)];
+}
+void build(ll p,ll l,ll r){
+    tag[p]=0;
+    if(l==r){ans[p]=a[l];return ;}
+    ll mid=(l+r)&gt;&gt;1;
+    build(ls(p),l,mid);
+    build(rs(p),mid+1,r);
+    push_up(p);
+} 
+inline void f(ll p,ll l,ll r,ll k){
+    tag[p]=tag[p]+k;
+    ans[p]=ans[p]+k*(r-l+1);
+}
+inline void push_down(ll p,ll l,ll r){
+    ll mid=(l+r)&gt;&gt;1;
+    f(ls(p),l,mid,tag[p]);
+    f(rs(p),mid+1,r,tag[p]);
+    tag[p]=0;
+}
+inline void update(ll nl,ll nr,ll l,ll r,ll p,ll k){
+    if(nl&lt;=l&amp;&amp;r&lt;=nr){
+        ans[p]+=k*(r-l+1);
+        tag[p]+=k;
+        return ;
+    }
+    push_down(p,l,r);
+    ll mid=(l+r)&gt;&gt;1;
+    if(nl&lt;=mid)update(nl,nr,l,mid,ls(p),k);
+    if(nr&gt;mid) update(nl,nr,mid+1,r,rs(p),k);
+    push_up(p);
+}
+ll query(ll q_x,ll q_y,ll l,ll r,ll p){
+    ll res=0;
+    if(q_x&lt;=l&amp;&amp;r&lt;=q_y)return ans[p];
+    ll mid=(l+r)&gt;&gt;1;
+    push_down(p,l,r);
+    if(q_x&lt;=mid)res+=query(q_x,q_y,l,mid,ls(p));
+    if(q_y&gt;mid) res+=query(q_x,q_y,mid+1,r,rs(p));
+    return res;
+}
+</code></pre>
+<h1 id="part-4线段树进阶">Part 4：线段树进阶</h1>
+<p>留到下次再讲吧😄</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[浅谈IDA*]]></title>
+        <id>https://yydcc-blog.github.io/post/qian-tan-ida/</id>
+        <link href="https://yydcc-blog.github.io/post/qian-tan-ida/">
+        </link>
+        <updated>2022-03-04T13:02:16.000Z</updated>
+        <content type="html"><![CDATA[<p>为什么想到写这个了呢，因为实在是太好用了。</p>
+<p><s>文章其实是转载来的</s></p>
+<h1 id="ida算法迭代加深的评估函数">IDA*算法：迭代加深的+评估函数</h1>
+<p>A<em>算法的本质时带评估函数的优先队列BFS，其最关键的部分在于评估函数的选取。那么可以考虑在DFS中也采用相同的优化。IDA</em>就是这部一种算法，IDA*=迭代加深DFS+评估函数（迭代加深：限定深度搜索，如果当前深度找不到，再增大深度限制）。</p>
+<p>由于迭代加深DFS和优先队列BFS的特性不同，此时评估函数评估的内容应该是当前状态到目标状态的步数，并且估计数不超过实际数，那么判断是否过深度限制时，可以用当前步数+估计步数，如果该值超过深度限制，则不需要继续搜索，可以立即回溯。</p>
+<p>IDA*算法实现简单，效率高，通过不搜索当前步数+估计步数超过深度限制的状态，减少了很多搜索量，是一种良好的优化方式。</p>
+<h1 id="例题">例题</h1>
+<h2 id="排书poj3460acwing180">排书(POJ3460/AcWing180)</h2>
+<h3 id="题目大意">题目大意</h3>
+<p>N本书，编号<code>1~n</code>，给出初始排列顺序，每次抽取连续的一段书插到另一个位置，求让书按1~n排列最少的操作数。（n&lt;=15，若干组数据）超过5次搜索，直接输出5 or more。</p>
+<h3 id="解析">解析</h3>
+<p>采用IDA*。目标状态为书本按顺序排列，因此第i本书后应该是第i+1本书，即i+1是i的正确后继。对任意状态，若整个排列中书的错误后继数量为t，那么一次操作最多改变3本书的后继，那么即便是理想状态要进行的操作也至少为t//3（向上取整）。可以用t//3（向上取整）作为评估函数。<br>
+采用迭代加深，从1~4依次限制深度，从起始状态出发DFS，枚举各种抽书排书的可能；进入一个状态后，如果当前操作数+评估函数超过深度限制，就直接回溯。</p>
+<h1 id="总结">总结：</h1>
+<p>可以看到，IDA<em>的实现相对比较简单，只需要确定对应的评估函数，就可以在原本的迭代加深DFS代码上修改判断依据即可，在代码量上不会增加多少难度。它的关键在于如何确定一个合适的评估函数，既要不超过实际剩余步数，又要尽可能贴近实际剩余步数，展示一定剩余步数的趋势（和A</em>一样）</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[线段树，从入门到退坑]]></title>
+        <id>https://yydcc-blog.github.io/post/xian-duan-shu-cong-ru-men-dao-tui-keng/</id>
+        <link href="https://yydcc-blog.github.io/post/xian-duan-shu-cong-ru-men-dao-tui-keng/">
+        </link>
+        <updated>2022-02-15T08:13:12.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="part0前言">Part0：前言</h1>
+<blockquote>
+<p>如果你在考提高组前一天还在问这个问题，那么你会与一等奖失之交臂；如果你还在冲击普及组一等奖，那么这篇博客会浪费你人生中宝贵的5~20分钟。</p>
+</blockquote>
+<h1 id="part1概念引入建树以区间求和为例">Part1：概念引入+建树（以区间求和为例）</h1>
+<h2 id="part11概念引入">Part1.1：概念引入</h2>
+<p>线段树，顾名思义，用线性的方式保存一颗二叉树。</p>
+<p>举个例子：</p>
+<p>有一串数<code>1 2 3 4 5 6 7 8 9</code></p>
+<p>那么构造出的线段树就为：</p>
+<pre><code class="language-cpp">                     1(123456789)
+          2(1234)                    3(56789)
+   4(12)       5(34)          6(56)           7(789)
+8(1) 9(2)     10(3) 11(4)   12(5) 13(6)      14(7) 15(89)
+                                                  16(8) 17(9)
+</code></pre>
+<p>其中括号内的数表示当前这个下标维护的范围。</p>
+<h2 id="part12建树">Part1.2：建树</h2>
+<p>用递归的方法建树。<code>void build(int p,int l,int r)</code></p>
+<p>其中<code>p</code>表示下标，<code>l r</code>表示区间的范围。</p>
+<p>如果 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>l</mi><mo>=</mo><mi>r</mi></mrow><annotation encoding="application/x-tex">l=r</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span></span></span></span>，说明此时为叶子节点，直接赋值。</p>
+<p>否则将区间分为两个，分别建树，下标为<code>*2</code>和<code>*2+1</code>。</p>
+<p>最后维护各节点的信息，为它的两个子节点的和。</p>
+<pre><code class="language-cpp">void build(int p,int l,int r){
+    if(l==r){tree[p]=a[l];return ;}
+    int mid=(l+r)&gt;&gt;1;
+    build(p*2,l,mid);
+    build(p*2+1,mid+1,r);
+    push_up(p);//维护信息
+}
+</code></pre>
+<h1 id="part2区间查询修改以区间求和为例">Part2：区间查询+修改（以区间求和为例）</h1>
+<h2 id="part21区间查询">Part2.1：区间查询</h2>
+<p>递归法查询。</p>
+<p>如果查询区间在当前区间中，返回线段树数组中当前下标所对应的值。</p>
+<p>不然将查询分成两部分。</p>
+<p>如果有一部分在左区间，就将左区间的查询结果加上。右区间同理。</p>
+<p>最终返回左区间和右区间的查询结果之和即可。</p>
+<pre><code class="language-cpp">int search(int i,int l,int r){
+    if(tree[i].l&gt;=l &amp;&amp; tree[i].r&lt;=r)//如果这个区间被完全包括在目标区间里面，直接返回这个区间的值
+        return tree[i].sum;
+    if(tree[i].r&lt;l || tree[i].l&gt;r)  return 0;//如果这个区间和目标区间毫不相干，返回0
+    int s=0;
+    if(tree[i*2].r&gt;=l)  s+=search(i*2,l,r);//如果这个区间的左儿子和目标区间又交集，那么搜索左儿子
+    if(tree[i*2+1].l&lt;=r)  s+=search(i*2+1,l,r);//如果这个区间的右儿子和目标区间又交集，那么搜索右儿子
+    return s;
+}
+</code></pre>
+<h2 id="part22区间修改">Part2.2：区间修改</h2>
+<p>和区间查询类似。</p>
+<pre><code class="language-cpp">void add(int i,int dis,int k){
+    if(tree[i].l==tree[i].r){//如果是叶子节点，那么说明找到了
+        tree[i].sum+=k;
+        return ;
+    }
+    if(dis&lt;=tree[i*2].r)  add(i*2,dis,k);//在哪往哪跑
+    else  add(i*2+1,dis,k);
+    tree[i].sum=tree[i*2].sum+tree[i*2+1].sum;//返回更新
+    return ;
+}
+</code></pre>
+<h1 id="part-3标记操作到下一篇讲">Part 3：标记操作到下一篇讲</h1>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[windows.h中到底有什么]]></title>
+        <id>https://yydcc-blog.github.io/post/windowsh-zhong-dao-di-you-shi-me/</id>
+        <link href="https://yydcc-blog.github.io/post/windowsh-zhong-dao-di-you-shi-me/">
+        </link>
+        <updated>2022-02-02T04:25:07.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="第一个">第一个：</h1>
+<p>FindWindow根据窗口类名或窗口标题名来获得窗口的句柄，该函数返回窗口的句柄， 这个函数的定义是这样的 HWND WINAPI FindWindow(LPCSTR lpClassName,LPCSTR lpWindowName);</p>
+<p>第一个参数填窗口的类名，第二个填窗口的标题名，其实是不需要同时填两个参数的，也就是说，你只要知道窗口的类名或窗口的标题就可以了，没有的那个就用NULL代替。</p>
+<p>比如现在有一个窗口名为&quot;无标题.txt - 记事本&quot;的记事本程序。那么我就可以用上面的函数获得这个窗口的句柄，那获得了这个窗口的句柄我可以干什么呢？作用可大了，因为很多操作窗口的函数，都需要窗口句柄作参数，如移动、改变窗口大小的MoveWindow函数，在这里举个例子，大家就更能体会到这个FindWindow的用法、用处。</p>
+<p>FindWindow例子：已知一个窗口名称，写一个程序关闭该窗口，假设当前电脑正有一个窗口名为&quot;无标题.txt - 记事本&quot;的记事本程序运行</p>
+<pre><code class="language-cpp">#include&lt;windows.h&gt;//API函数的头文件
+int main() { 
+    HWND wnd;//定义一个窗口句柄变量，用以存储找到的窗口句柄
+    wnd=FindWindow(NULL,&quot;无标题.txt - 记事本&quot;);//获得窗口名为&quot;无标题.txt - 记事本&quot;的窗口句柄
+    SendMessage(wnd,WM_CLOSE,0,0);//调用SendMessage函数，发送一个WM_CLOSE（关闭）消息给wnd窗口句柄。
+    return 0; 
+} //如果要根据窗口类名来获得窗口句柄话，只要给函数的第一个参数填类名，第二个参数窗口名填NULL，即可，用Spy++可查看窗口类名。
+</code></pre>
+<h1 id="第二个">第二个：</h1>
+<p>SendMessage根据窗口句柄发送一个消息给窗口</p>
+<p>函数定义：LRESULT SendMessage（HWND hWnd，UINT Msg，WPARAM wParam，LPARAM IParam）；</p>
+<p>第一个参数是窗口句柄，第二参数个是消息类型，下面的消息表列举了所有消息，第三，四个参数是消息附带信息，解释依赖于消息类型，比如一个字符消息（WM_CHAR),那么第三个参数就储存有一个字符的ASCII码。</p>
+<p>消息机制大家都应该知道吧，Windows是基于消息的系统，鼠标移动键盘按键都会产生消息。 接下来举一个例子，发送一个WM_CHAR消息给窗口，也就是模仿键盘按键，接收消息的窗口依旧以&quot;无标题.txt - 记事本&quot;为例： SendMessage例子：模仿键盘按键</p>
+<pre><code class="language-cpp">#include&lt;windows.h&gt;
+int main() { 
+    HWND wnd; 
+    wnd=FindWindow(NULL,&quot;无标题.txt - 记事本&quot;);
+    while(1) { 
+        SendMessage(wnd,WM_CHAR,WPARAM('a'),0); 
+        Sleep(300); 
+    }
+    return 0; 
+} 
+</code></pre>
+<p>呵呵上面的例子是不是没用，这是为什么呢，哪里出错了吗？错倒是没有错，只是窗口句柄有问题，消息发送给了主窗口。接收消息的窗口不对。记事本窗口界面有些有什么东西呢？菜单，编辑框，状态栏等控件，控件也是窗口，既然是窗口，那当然它们也有窗口句柄，而在记事本里是在哪里打字的？编辑框控件里打字的嘛！所以消息应该发送编辑框控件，那如何获得记事本里编辑框控件的窗口句柄呢？用FindWindow吗？不知道编辑框窗口标题名，类名也不知道，当然也有其它方法获取编辑框窗口标题名和窗口类名，如Spy++。关于如何获得编辑框句柄，将在以后的函数中会有介绍，这里我们就用WindowFromPoint这个函数来获取，这个函数获取窗口句柄的方法比较笨，（相对于我这个例子来说），这个函数是根据什么来获取窗口句柄的呢？根据屏幕坐标点，如屏幕坐标点20，20，当前是哪个窗口占有，就返回哪个窗口的句柄。有了这个函数，我们还需要一个函数GetCursorPos获取鼠标当前位置（针对于屏幕）； 可行的例子：模仿键盘按键：</p>
+<pre><code class="language-cpp">#include&lt;windows.h&gt;
+int main() { 
+    POINT curpos;//一个可储存坐标点的结构体变量，x横坐标，y,纵坐标，如curpos.x curpos.y
+    while(1) { 
+        GetCursorPos(&amp;curpos);//获取当前鼠标的位置，位置将储存在curpos里。
+        HWND hWnd = WindowFromPoint(curpos);//根据curpos所指的坐标点获取窗口句柄
+        SendMessage(hWnd,WM_CHAR,WPARAM('g'),0);//发送一个字符（按键）消息g给当前鼠标所指向的窗口句柄
+        Sleep(300);//睡眠三百毫秒，相当于等待三分之一秒} } 这个程序一运行后，只要把鼠标指向要输入字符的窗口句柄，那么就相当于键盘每三分之一秒按了一个g键，试试吧！ 如果这样觉得模仿键盘按键太麻烦的话，那么就用keybd_event这个函数，这个专门用于模仿键盘按键的，关于怎么用，自己百度一搜，就知道了。既然SendMessage能模仿键盘按键的话，那也能模仿鼠标左击，右击。而此时SendMessage函数第三，四个参数的解释就是储存有鼠标左击，右击时的位置。如模仿鼠标右击，想一想，一次鼠标右击有哪几步，分别是鼠标右键按下，鼠标右键松开，如果你按下鼠标右键不松开，那它是不是鼠标右击，不是的，直到你松开鼠标右键，才能算是一次完整的鼠标右击.鼠标右键按下的消息类型是“WM_RBUTTONDOWN”，右键松开的消息是“WM_RBUTTONUP”，那么一次完整的鼠标右击应该是： 
+        SendMessage(wnd,WM_RBUTTONDOWN,0,0);//鼠标右键按下,第三，四个参数说明了鼠标按下时的位置Sleep(100);//间隔100毫秒
+        SendMessage(wnd,WM_RBUTTONUP,0,0);//鼠标右键松开同样，也有一个专门模仿鼠标动作的函数，mouse_event这个函数，可以模仿鼠标的移动，单击，双击等。以后会有专门介绍。
+    }
+    return 0;
+}
+</code></pre>
+<h1 id="第三个">第三个：</h1>
+<p>GetCursorPos获取鼠标当前位置（屏幕） 这个函数在SendMessage函数有介绍，这里仅举一个例子，在界面里不停的输出鼠标当前位置。</p>
+<pre><code class="language-cpp">#include&lt;windows.h&gt;
+#include&lt;stdio.h&gt;
+int main() { 
+    POINT curpos;
+    while(1) { 
+        GetCursorPos(&amp;curpos); 
+        printf(&quot;x:%d,y:%d&quot;,curpos.x,curpos.y); 
+        Sleep(300); 
+        printf(&quot;\n&quot;); 
+    } 
+    return 0;
+}
+</code></pre>
+<h1 id="第四个">第四个：</h1>
+<p>WindowFromPoint根据坐标点获得对应的窗口句柄 在SendMessage有解释，这里仅举一个例子，鼠标指向哪个窗口，就关闭哪个窗口。</p>
+<pre><code class="language-cpp">#include&lt;windows.h&gt;
+int mai() { 
+    Sleep(2500);//等待一会儿，用于把鼠标移到其它窗口上去，避免指向本身进程的窗口，关掉自己的窗口。
+    POINT curpos;
+    while(1) { 
+        GetCursorPos(&amp;curpos); 
+        HWND wnd=WindowFromPoint(curpos); 
+        SendMessage(wnd,WM_CLOSE,0,0); 
+        Sleep(300); 
+    }
+    return 0; 
+} 
+</code></pre>
+<h1 id="第五个">第五个：</h1>
+<p>MoveWindow根据窗口句柄移动窗口，改变窗口大小 函数定义：BOOL MoveWindow( HWND hWnd, int X, int Y, intnWidth, int nHeight, BOOL bRepaint );</p>
+<p>hWnd是要改变大小的窗口的句柄，x,y相对于屏幕的坐标，窗口左上角的位置与之相对应，nWidth和nHeight是窗口新的宽高，bRepaint指定窗口是否重画。</p>
+<p>这里依旧以&quot;无标题.txt - 记事本&quot;为例子，改变这个窗口大小，并把窗口移到左上角去。</p>
+<pre><code class="language-cpp">#include&lt;windows.h&gt;
+int main() { 
+    HWND wnd; 
+    wnd=FindWindow(NULL,&quot;无标题.txt - 记事本&quot;); 
+    MoveWindow(wnd,0,0,220,120,NULL);
+    return 0; 
+}
+</code></pre>
+<h1 id="第六个">第六个：</h1>
+<p>ShowWindow设置窗口显示状态，如隐藏，最大化，最小化 函数定义BOOL ShowWinow(HWND hWnd,int nCmdShow); SW_HIDE：隐藏窗口并激活其他窗口。第一个参数hWnd指明了窗口句柄，第二个参数指明了窗口的状态，现在给出第二个参数常用取值范围：</p>
+<ul>
+<li>SW_MAXIMIZE：最大化指定的窗口。</li>
+<li>SW_MINIMIZE：最小化指定的窗口并且激活在Z序中的下一个顶层窗口。</li>
+<li>SW_RESTORE：激活并显示窗口。如果窗口最小化或最大化，则系统将窗口恢复到原来的尺寸和位置。在恢复最小化窗口时，应用程序应该指定这个标志。</li>
+<li>SW_SHOW：在窗口原来的位置以原来的尺寸激活和显示窗口。</li>
+<li>ShowWindow例子：程序运行后，在桌面上隐藏一个指定的窗口，并在4秒后再将其显示</li>
+</ul>
+<pre><code class="language-cpp">#include&lt;windows.h&gt;
+int main() { 
+    HWND wnd; 
+    wnd=FindWindow(NULL,&quot;无标题.txt - 记事本&quot;); 
+    ShowWindow(wnd,SW_HIDE); 
+    Sleep(5000); 
+    ShowWindow(wnd,SW_SHOW);
+    return 0; 
+} 
+</code></pre>
+<h1 id="第七个">第七个：</h1>
+<p>SetCursorPos设置鼠标的位置、把鼠标移动到指定的位置</p>
+<p>函数定义：BOOL SetCursorPos(int x,int y);</p>
+<p>这个函数的两个参数我想大家应该知道是什么意思吧，屏幕的坐标点。 直接看例子：</p>
+<pre><code class="language-cpp">#include&lt;windows.h&gt;
+int main() { 
+    int sec=0;
+    while(sec&lt;200) { 
+        SetCursorPos(rand()%1024,rand()%768);//随机设置鼠标的位置
+        Sleep(20); 
+        sec++; 
+    }
+    return 0; 
+}
+</code></pre>
+<h1 id="第八个">第八个：</h1>
+<p>CopyFile复制一个文件</p>
+<p>如何复制一个文件，比如，我要把E盘的abb.txt的文本文件复制到d盘的zhengyong.txt,则调用语句 CopyFile(&quot;e:\abb.txt&quot;,&quot;d:\zhengyong.txt&quot;,FALSE);即可。</p>
+<p>第三个参数有以下说明： 如果设为TRUE（非零），那么一旦目标文件已经存在，则函数调用会失败。否则目标文件会被覆盖掉。</p>
+<h1 id="第九个">第九个：</h1>
+<p>DeleteFile删除一个文件 如何删除一个文件，语句：DeleteFile(&quot;e\abb.txt&quot;);既是删除 如果目标为隐藏或只读，则无用。</p>
+<h1 id="第十个">第十个：</h1>
+<p>CreateDirectory创建一个文件夹（目录）</p>
+<p>假如E盘下什么文件也没有 CreateDirectory(&quot;e:\aaa\bbb&quot;,NULL);这样是错的，不能同时建两个文件，除非E盘下已经有了个aaa文件夹了。</p>
+<p>这样是对的CreateDirectory(&quot;e:\aaa&quot;,NULL);</p>
+<h1 id="第十一个">第十一个：</h1>
+<p>GetClientRect获得窗口大小(客户区）<br>
+看例子：</p>
+<pre><code class="language-cpp">#include&lt;windows.h&gt;
+#include&lt;stdio.h&gt;
+int main(int argc, char* argv[]) { 
+    HWND wnd;
+    while(1) { 
+        wnd=FindWindow(NULL,&quot;无标题.txt - 记事本&quot;); 
+        RECT rect;//专门用来存储窗口大小
+        GetClientRect(wnd,&amp;rect);//获取窗口大小
+        printf(&quot;%d,%d,%d,%d\n&quot;,rect.left,rect.top,rect.right,rect.bottom);//输出窗口大小，试着用鼠标改变窗口大小
+        Sleep(300);
+     }
+ }
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[LIVE-活着]]></title>
+        <id>https://yydcc-blog.github.io/post/live-huo-zhao/</id>
+        <link href="https://yydcc-blog.github.io/post/live-huo-zhao/">
+        </link>
+        <updated>2022-01-31T13:48:51.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="前言">前言</h1>
+<p>by 黑_白（永远的CC）</p>
+<h1 id="代码行数149行">代码行数：149行</h1>
+<h1 id="更新日志">更新日志</h1>
+<ul>
+<li>第一个版本1️⃣</li>
+<li>添加了不同人数🚻</li>
+<li>添加了对作弊者的惩治☠️</li>
+<li>添加了亡语👻</li>
+<li>第二个版本2️⃣</li>
+<li>避免了自杀🤡</li>
+<li>添加了技能🎌</li>
+</ul>
+<h1 id="判定数字机制">判定数字机制</h1>
+<p>第一个1/1<br>
+第二个1/2<br>
+第三个1/3<br>
+第四个1/4<br>
+第五个1/5<br>
+第六个1/6</p>
+<h1 id="技能列表">技能列表</h1>
+<ul>
+<li>冰冻：跳过杀人阶段</li>
+<li>近视：只能杀编号相邻的人（没有编号相邻的人就杀不了QWQ）</li>
+</ul>
+<h1 id="游戏代码">游戏代码：</h1>
+<pre><code class="language-cpp">//LIVE
+#include&lt;bits/stdc++.h&gt;
+#include&lt;windows.h&gt;
+#include&lt;conio.h&gt;
+using namespace std;
+void print(char a[]){for(int i=0;i&lt;strlen(a);i++){cout&lt;&lt;a[i];Sleep(10);}puts(&quot;&quot;);}
+void cls(){system(&quot;cls&quot;);}
+void pause(){system(&quot;pause&quot;);}
+void hehe(){print(&quot;小朋友想走不当途径是不好的&quot;);print(&quot;你死了&quot;);exit(1);}
+int f,a,last,live[10000],skill[10000];
+int main(){
+	srand(time(NULL));
+	system(&quot;title LIVE-by black_white&quot;);
+	system(&quot;MODE CON: COLS=50 LINES=30&quot;);
+	std::srand(time(NULL));
+	print(&quot;LIVE活着&quot;);pause();cls();
+	print(&quot;by 黑_白（永远的CC）&quot;);pause();cls();
+	printf(&quot;输入人数（推荐7人）：&quot;);
+	cin&gt;&gt;last;
+	if(last&lt;=0)hehe();
+	for(int i=1;i&lt;=last;i++)live[i]=i;
+	print(&quot;规则：一共n个人，每个人选择一个击杀目标，最后剩下的人胜利&quot;);pause();cls();
+	print(&quot;游戏开始！&quot;);cls();
+	printf(&quot;输入你的编号（1~n）：&quot;);
+	cin&gt;&gt;a;cls();
+	if(a==114514)print(&quot;成功开启人机对打！&quot;);
+	else if(!(a&gt;=1&amp;&amp;a&lt;=last))hehe();
+	cls();
+	for(int I=1;;I++){
+		cls();
+		printf(&quot;--------------------------------------------------\n&quot;);
+		printf(&quot;第%d个回合：\n&quot;,I);
+		for(int i=1;i&lt;=last;i++){
+			if(live[i]==0)continue;
+			int Cnt=0;
+			for(int j=1;j&lt;=last;j++)if(live[j]!=0)Cnt++;
+			printf(&quot;还剩%d人\n&quot;,Cnt);
+			printf(&quot;还活着的人：&quot;);
+			for(int j=1;j&lt;=last;j++)if(live[j]!=0)printf(&quot;%d &quot;,live[j]);
+			puts(&quot;&quot;);
+			if(skill[i]==1){
+				printf(&quot;%d号解冻\n&quot;,i);
+				skill[i]=0;
+				continue;
+			}
+			int mb=rand()%(last+1);
+			while(live[mb]==0&amp;&amp;mb==i&amp;&amp;mb==0)mb=rand()%(last+1);
+			if(a!=live[i])printf(&quot;%d选择了%d号\n&quot;,live[i],live[mb]);
+			else{
+				printf(&quot;你的目标是（输入0放弃猎杀）：&quot;);
+				cin&gt;&gt;mb;
+				bool ff=0;
+				for(int j=1;j&lt;=last;j++)if(live[j]==mb)ff=1;
+				if(!ff)hehe();
+			}
+			if(mb==0){
+				print(&quot;他放弃了猎杀...&quot;);
+				getch();
+				continue;
+			}
+			if(skill[i]==2){
+				if(mb-i&gt;1||mb-i&lt;-1){
+					print(&quot;近视生效...&quot;);
+					print(&quot;打不到目标...&quot;);
+					skill[i]=0;
+					continue;
+				}
+				skill[i]=0;
+			}
+			print(&quot;正在生成判定数字...\n&quot;);
+			int pd[7],cnt=1;memset(pd,0,sizeof(pd));
+			for(int j=1;j&lt;=6;j++){
+				int t=rand()%j;
+				if(t!=0)break;
+				int tt=rand()%6;
+				pd[cnt]=tt;
+				cnt++;
+			}
+			printf(&quot;可判定的数字为：&quot;);
+			for(int j=1;j&lt;=cnt;j++)pd[j]++,printf(&quot;%d &quot;,pd[j]);
+			puts(&quot;&quot;);
+			int s=rand()%3;
+			if(s==0){
+				print(&quot;有人篡改了判定数字。&quot;);
+				pd[rand()%cnt+1]=rand()%6+1;
+				printf(&quot;现可判定的数字为：&quot;);
+				for(int j=1;j&lt;=cnt;j++)printf(&quot;%d &quot;,pd[j]);
+				puts(&quot;&quot;);
+			}
+			getch();
+			int sz=rand()%6;sz++;
+			printf(&quot;%d号抛出了%d\n&quot;,live[i],sz);
+			bool kill=0;
+			for(int i=1;i&lt;=cnt;i++)
+				if(sz==pd[i]){
+					kill=1;
+					break;
+				}
+			if(!kill)print(&quot;未杀死目标。\n&quot;),getch();
+			else{
+				int ttt=rand()%3;
+				if(ttt&gt;0){
+					live[mb]=0,print(&quot;成功杀死目标！\n&quot;);
+					int tttt=rand()%2;
+					if(tttt){
+						int mb3=rand()%(last+1);
+						while(live[mb3]==0&amp;&amp;mb3==i&amp;&amp;mb3==0)mb3=rand()%(last+1);
+						printf(&quot;并发动技能：&quot;);
+						int aa=rand()%2;
+						if(aa==0){
+							printf(&quot;冻结\n&quot;);
+							printf(&quot;%d号被冻结了。\n&quot;,mb3);
+							skill[mb3]=1;
+						}else if(aa==1){
+							printf(&quot;近视\n&quot;);
+							printf(&quot;%d号近视了。\n&quot;,mb3);
+							skill[mb3]=2;
+						}
+					}
+					getch();
+				}
+				else{
+					int mb2=rand()%(last+1);
+					while(live[mb2]==0&amp;&amp;mb==mb2&amp;&amp;mb2==0)mb2=rand()%(last+1);
+					printf(&quot;%d号复活了，并随机诅咒了%d号\n&quot;,live[mb],live[mb2]);
+					getch();
+					int tttt=rand()%2;
+					if(tttt)printf(&quot;%d号死了\n&quot;,live[mb2]),live[mb2]=0;
+					else printf(&quot;但他没死。\n\n&quot;);
+					getch();
+				}
+			}
+			int sum=0;
+			for(int i=1;i&lt;=last;i++)if(live[i]!=0)sum++;
+			if(sum==0){
+				cls();
+				print(&quot;每个人都倒下了...&quot;);
+				print(&quot;无人胜利...&quot;);
+				pause();
+				return 0;
+			}
+			if(sum==1){
+				for(int k=1;k&lt;=last;k++)
+					if(live[k]!=0){
+						printf(&quot;%d挺到了最后...\n&quot;,live[k]);
+						if(k==a)print(&quot;你胜利了！&quot;);
+						pause();
+						return 0;
+					}
+			}
+		}
+	}
+	return 0;
+}
+</code></pre>
+]]></content>
+    </entry>
+</feed>
